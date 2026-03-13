@@ -844,8 +844,6 @@ Cron: every 6 hours
 
 ## 12. Rule Engine Orchestrator Design
 
-Inspired by the strategy-pattern rule engine at `stimuler/backend-api/src/services/rule-engine/`, adapted for content management workflows.
-
 ### Core Concept
 
 The Rule Engine is a **singleton orchestrator** that maintains a registry of **strategies**. Each strategy implements a lifecycle interface with explicit phases. The engine routes content events to the correct strategy, manages state persistence, and handles two-phase commit for reliable execution.
@@ -861,7 +859,7 @@ Content management has many conditional workflows:
 
 Rather than hardcoding these as if-else chains scattered across services, a rule engine provides a **structured, extensible** way to add new behaviors.
 
-### Architecture (adapted from stimuler pattern)
+### Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -897,7 +895,7 @@ Rather than hardcoding these as if-else chains scattered across services, a rule
 /**
  * ContentStrategy Interface — Explicit Lifecycle Phases
  *
- * Adapted from stimuler's RuleStrategy with content-management semantics.
+ * 
  * Solves the same dual heterogeneity problem:
  *   - INPUT HETEROGENEITY: Different strategies need different data
  *     (analytics API, trending data, content metadata, user behavior logs)
@@ -925,7 +923,7 @@ interface ContentStrategy<TPrepared = unknown, TState extends Record<string, unk
      * Returns { state, changed } — skip DB write if unchanged (idempotency).
      *
      * The updated state includes a `shouldTrigger` flag, keeping trigger
-     * logic co-located with state update logic (same as stimuler pattern).
+     * logic co-located with state update logic.
      */
     updateState(prepared: TPrepared, currentState: TState): {
         state: TState;
@@ -994,7 +992,7 @@ interface ContentEventContext {
 ```typescript
 /**
  * Rule state table — stores per-org, per-strategy state.
- * Mirrors stimuler's rule_state table pattern.
+ * 
  */
 // Table: content_rule_states
 // | Column              | Type          | Notes                                      |
@@ -1079,7 +1077,7 @@ class PostPerformanceRepurposeStrategy implements ContentStrategy<PostPerfPrepar
         };
     }
 
-    // ... two-phase commit methods (same pattern as stimuler) ...
+    // ... two-phase commit methods ...
 }
 ```
 
